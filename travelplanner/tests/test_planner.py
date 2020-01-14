@@ -1,12 +1,12 @@
 import pytest
+import csv
+import os
 from .. import planner as pl
 
 
-def test_pass():
-    assert 1 + 1 == 2
-
-def test_timetable():
-    route = [
+@pytest.fixture
+def route():
+    _route = [
         (2, 1, "A"),
         (3, 1, ""),
         (4, 1, ""),
@@ -40,6 +40,55 @@ def test_timetable():
         (15, 6, ""),
         (16, 6, "G"),
     ]
-    ttable = pl.timetable(route)
-    correct = {'A': 0, 'B': 50, 'C': 100, 'D': 150, 'E': 230, 'F': 260, 'G': 310}
+    with open("test_route.csv", "w", newline="") as file:
+        writer = csv.writer(file)
+        for row in _route:
+            writer.writerow(row)
+    route = pl.Route("test_route.csv")
+    os.remove("test_route.csv")
+
+    return route
+
+
+@pytest.fixture
+def passengers():
+    _passengers = [
+        ((5, 4), (0, 17), 24),
+        ((4, 1), (2, 1), 15),
+        ((15, 7), (0, 22), 22),
+        ((1, 11), (2, 0), 18),
+    ]
+
+    with open("test_passengers.csv", "w", newline="") as file:
+        writer = csv.writer(file)
+        for row in _passengers:
+            writer.writerow(row)
+    passengers = pl.read_passengers("test_route.csv")
+    os.remove("test_passengers.csv")
+
+    return passengers
+
+
+@pytest.fixture
+def passenger():
+    start = (5, 4)
+    end = (0, 17)
+    speed = 24
+    passenger = pl.Passenger(start, end, speed)
+
+    return passenger
+
+
+def test_timetable(route):
+    ttable = route.timetable()
+    correct = {"A": 0, "B": 50, "C": 100, "D": 150, "E": 230, "F": 260, "G": 310}
+
     assert ttable == correct
+
+
+def test_generate_cc(route):
+    cc = route.generate_cc()
+    correct_cc = ((2, 1), "0000020000600022244444220000000")
+    print(type(cc))
+
+    assert cc == correct_cc
