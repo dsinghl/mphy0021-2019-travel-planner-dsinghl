@@ -54,13 +54,13 @@ class Route:
         cc = []
         freeman_cc2cord = {
             0: (1, 0),
-            1: (1, -1),
-            2: (0, -1),
-            3: (-1, -1),
+            1: (1, 1),
+            2: (0, 1),
+            3: (-1, 0),
             4: (-1, 0),
-            5: (-1, 1),
-            6: (0, 1),
-            7: (1, 1),
+            5: (-1, -1),
+            6: (0, -1),
+            7: (1, -1),
         }
         freeman_coord2cc = {val: key for key, val in freeman_cc2cord.items()}
         for b, a in zip(self.route[1:], self.route):
