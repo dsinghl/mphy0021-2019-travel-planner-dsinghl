@@ -7,14 +7,14 @@ import csv
 class Route:
 
     def __init__(self, route_filename, speed=10):
-        self.__check_route_csv_format(route_filename)
+        self.__check_valid_speed(speed)
+        self.speed = speed
 
         self.route = self.__read_route_csv(route_filename)
         self.__check_valid_route()
 
-        self.speed = speed
-
     def __read_route_csv(self, route_filename):
+        self.__check_route_csv_format(route_filename)
         route_from_csv = []
         with open(route_filename) as csv_file:
             read_csv = csv.reader(csv_file, delimiter=",")
@@ -31,8 +31,8 @@ class Route:
         with open(route_filename) as csv_file:
             for line in csv_file:
                 if line.count(",") != commas_per_line:
-                    raise IndexError(
-                        f"Please check {route_filename} follows correct format"
+                    raise SyntaxError(
+                        "Please check route file follows correct format."
                     )
 
     def __check_valid_route(self):
@@ -42,6 +42,11 @@ class Route:
                 raise ValueError(
                     "Invalid route. Bus can only travel horizontally or vertically per step."
                 )
+
+
+    def __check_valid_speed(self, speed):
+        if speed <= 0:
+            raise ValueError('Bus cannot move at less than or equal to 0 minutes per step.')
 
     def _stop_locations(self):
         stop_list = [
@@ -94,7 +99,7 @@ class Route:
             0: (1, 0),
             1: (1, 1),
             2: (0, 1),
-            3: (-1, 0),
+            3: (-1, 1),
             4: (-1, 0),
             5: (-1, -1),
             6: (0, -1),
@@ -201,9 +206,9 @@ class Journey:
         closer_start = self.__find_closest_stop(passenger.start)
         closer_end = self.__find_closest_stop(passenger.end)
 
-        if type(closer_start) == list:
+        if isinstance(closer_start, list):
             closer_start = self.__pick_stop(closer_start, "start")
-        if type(closer_end) == list:
+        if isinstance(closer_end, list):
             closer_end = self.__pick_stop(closer_end, "end")
 
         return (closer_start, closer_end)
@@ -259,7 +264,7 @@ class Journey:
     def plot_bus_load(self):
         stops = {step[2]: 0 for step in self._route() if step[2]}
         print(stops)
-        for passenger in passengers:
+        for passenger in self.passengers:
             trip = self.passenger_trip(passenger)
             stops[trip[0][1]] += 1
             stops[trip[1][1]] -= 1
@@ -274,36 +279,9 @@ class Journey:
         ax.set_xticklabels(list(stops.keys()))
         plt.show()
 
-    def map(self):
-        _, ax = plt.subplots()
-
-        for passen in passengers:
-            x = [passen.start[0], passen.end[0]]
-            y = [passen.start[1], passen.end[1]]
-            for _ in range(2):
-                ax.scatter(x[0], y[0], color="green")
-                ax.scatter(x[1], y[1], color="red")
-            ax.plot(x, y, linestyle="--", color="blue")
-
-        for x_route, y_route, stop in self._route():
-            if stop:
-                ax.scatter(x_route, y_route, s=75, marker="s")
-                ax.text(
-                    x_route,
-                    y_route,
-                    stop,
-                    bbox=dict(facecolor="white", edgecolor="black", pad=0.1),
-                )
-
-        route_step_x = [step[0] for step in self._route()]
-        route_step_y = [step[1] for step in self._route()]
-        ax.plot(route_step_x, route_step_y, linewidth=10.0, alpha=0.5)
-
-        ax.set_aspect("equal")
-        plt.show()
-
 
 def read_passengers(passenger_filename):
+    __check_passenger_csv_format(passenger_filename)
     passengers = []
     with open(passenger_filename) as csv_file:
         read_csv = csv.reader(csv_file, delimiter=",")
@@ -316,19 +294,12 @@ def read_passengers(passenger_filename):
     return passengers
 
 
-def __check_passenger_csv_format():
+def __check_passenger_csv_format(passenger_filename):
     commas_per_line = 4
-    with open(route_filename) as csv_file:
+    with open(passenger_filename) as csv_file:
         for line in csv_file:
             if line.count(",") != commas_per_line:
                 raise IndexError(
-                    f"Please check {route_filename} follows correct format"
+                    "Please check passenger file follows correct format."
                 )
 
-
-if __name__ == "__main__":
-    john = Passenger(start=(0,2), end=(8,1), speed=15) 
-    mary = Passenger(start=(0,0), end=(6,2), speed=12) 
-    route = Route("route.csv")
-    journey = Journey([mary, john], route)
-    print(journey.travel_time(mary.id))
