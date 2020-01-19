@@ -5,16 +5,15 @@ import csv
 
 
 class Route:
-
     def __init__(self, route_filename, speed=10):
-        self.__check_route_csv_format(route_filename)
+        self.__check_valid_speed(speed)
+        self.speed = speed
 
         self.route = self.__read_route_csv(route_filename)
         self.__check_valid_route()
 
-        self.speed = speed
-
     def __read_route_csv(self, route_filename):
+        self.__check_route_csv_format(route_filename)
         route_from_csv = []
         with open(route_filename) as csv_file:
             read_csv = csv.reader(csv_file, delimiter=",")
@@ -31,9 +30,7 @@ class Route:
         with open(route_filename) as csv_file:
             for line in csv_file:
                 if line.count(",") != commas_per_line:
-                    raise IndexError(
-                        f"Please check {route_filename} follows correct format"
-                    )
+                    raise SyntaxError("Please check route file follows correct format.")
 
     def __check_valid_route(self):
         chain_code = self.generate_cc()[1]
@@ -43,17 +40,23 @@ class Route:
                     "Invalid route. Bus can only travel horizontally or vertically per step."
                 )
 
+    def __check_valid_speed(self, speed):
+        if speed <= 0:
+            raise ValueError(
+                "Bus cannot move at less than or equal to 0 minutes per step."
+            )
+
+    def __str__(self):
+        return f"Route from {self.route[0][:2]} to {self.route[-1][:2]} with speed {self.speed} minutes per step"
+
+    def __repr__(self):
+        return f"route(start={self.route[0][:2]}, end={self.route[-1][:2]}, speed={self.speed})"
+
     def _stop_locations(self):
         stop_list = [
             (np.asarray(location), stop) for *location, stop in self.route if stop
         ]
         return stop_list
-
-    def __str__(self):
-        return f"Route from {self.route[0][:2]} to {self.route[-1][:2]} with speed {self.speed} minutes per step"
-    
-    def __repr__(self):
-        return f"route(start={self.route[0][:2]}, end={self.route[-1][:2]}, speed={self.speed})"
 
     def timetable(self):
         """Generates a timetable for a route as minutes from its first stop. """
@@ -65,7 +68,7 @@ class Route:
             time += self.speed
         return stops
 
-    def plot_map(self):
+    def plot_map(self,):
         max_x = max([n[0] for n in self.route]) + 5  # adds padding
         max_y = max([n[1] for n in self.route]) + 5
         grid = np.zeros((max_y, max_x))
@@ -73,11 +76,11 @@ class Route:
             grid[y, x] = 1
             if stop:
                 grid[y, x] += 1
-        _, ax = plt.subplots(1, 1)
+        fig, ax = plt.subplots(1, 1)
         ax.pcolor(grid)
         ax.invert_yaxis()
         ax.set_aspect("equal", "datalim")
-        plt.show()
+        return fig, ax
 
     def generate_cc(self):
         r"""
@@ -94,7 +97,7 @@ class Route:
             0: (1, 0),
             1: (1, 1),
             2: (0, 1),
-            3: (-1, 0),
+            3: (-1, 1),
             4: (-1, 0),
             5: (-1, -1),
             6: (0, -1),
@@ -109,6 +112,11 @@ class Route:
 
 
 class Passenger:
+
+    r"""
+    >>> Passenger(start=(1,1),end=(5,1), speed=20)
+    passenger1((1, 1),(5, 1),20)
+    """
 
     __lastID = 1
 
@@ -126,7 +134,7 @@ class Passenger:
         validspeed = type(speed) == float or int
         valid_init = validstart and validend and validspeed
         if not valid_init:
-             raise TypeError(
+            raise TypeError(
                 "Please supply tuple of 2 values for start and end positions, and a float or integer for speed"
             )
 
@@ -136,10 +144,14 @@ class Passenger:
     def __repr__(self):
         return f"passenger{self.id}({self.start},{self.end},{self.speed})"
 
-    def walk_time(self):
+    def walk_distance(self):
         endpoint = np.asarray(self.end)
         startpoint = np.asarray(self.start)
         distance = np.linalg.norm(endpoint - startpoint)
+        return distance
+
+    def walk_time(self):
+        distance = self.walk_distance()
         time = distance * self.speed
         return time
 
@@ -201,9 +213,9 @@ class Journey:
         closer_start = self.__find_closest_stop(passenger.start)
         closer_end = self.__find_closest_stop(passenger.end)
 
-        if type(closer_start) == list:
+        if isinstance(closer_start, list):
             closer_start = self.__pick_stop(closer_start, "start")
-        if type(closer_end) == list:
+        if isinstance(closer_end, list):
             closer_end = self.__pick_stop(closer_end, "end")
 
         return (closer_start, closer_end)
@@ -256,79 +268,44 @@ class Journey:
         print(f"Average time on bus: {av_bus_time:.0f} min")
         print(f"Average walking time: {av_walk_time:.0f} min")
 
-    def plot_bus_load(self):
+    def plot_bus_load(self,):
         stops = {step[2]: 0 for step in self._route() if step[2]}
         print(stops)
-        for passenger in passengers:
-            trip = self.passenger_trip(passenger)
-            stops[trip[0][1]] += 1
-            stops[trip[1][1]] -= 1
+        for passenger in self.passengers:
+            travel_time = self.travel_time(passenger.id)
+            if travel_time["bus"] != 0:
+                trip = self.passenger_trip(passenger)
+                stops[trip[0][1]] += 1
+                stops[trip[1][1]] -= 1
         for i, stop in enumerate(stops):
             if i > 0:
                 stops[stop] += stops[prev]
             prev = stop
         print(stops)
-        _, ax = plt.subplots()
+        fig, ax = plt.subplots()
         ax.step(range(len(stops)), list(stops.values()), where="post")
         ax.set_xticks(range(len(stops)))
         ax.set_xticklabels(list(stops.keys()))
-        plt.show()
-
-    def map(self):
-        _, ax = plt.subplots()
-
-        for passen in passengers:
-            x = [passen.start[0], passen.end[0]]
-            y = [passen.start[1], passen.end[1]]
-            for _ in range(2):
-                ax.scatter(x[0], y[0], color="green")
-                ax.scatter(x[1], y[1], color="red")
-            ax.plot(x, y, linestyle="--", color="blue")
-
-        for x_route, y_route, stop in self._route():
-            if stop:
-                ax.scatter(x_route, y_route, s=75, marker="s")
-                ax.text(
-                    x_route,
-                    y_route,
-                    stop,
-                    bbox=dict(facecolor="white", edgecolor="black", pad=0.1),
-                )
-
-        route_step_x = [step[0] for step in self._route()]
-        route_step_y = [step[1] for step in self._route()]
-        ax.plot(route_step_x, route_step_y, linewidth=10.0, alpha=0.5)
-
-        ax.set_aspect("equal")
-        plt.show()
+        return fig, ax
 
 
 def read_passengers(passenger_filename):
+    __check_passenger_csv_format(passenger_filename)
     passengers = []
     with open(passenger_filename) as csv_file:
         read_csv = csv.reader(csv_file, delimiter=",")
         for row in read_csv:
-            start = (int(row[0]), int(row[1]))
-            end = (int(row[2]), int(row[3]))
-            speed = int(row[4])
+            start = (float(row[0]), float(row[1]))
+            end = (float(row[2]), float(row[3]))
+            speed = float(row[4])
             passenger = (start, end, speed)
             passengers.append(passenger)
     return passengers
 
 
-def __check_passenger_csv_format():
+def __check_passenger_csv_format(passenger_filename):
     commas_per_line = 4
-    with open(route_filename) as csv_file:
+    with open(passenger_filename) as csv_file:
         for line in csv_file:
             if line.count(",") != commas_per_line:
-                raise IndexError(
-                    f"Please check {route_filename} follows correct format"
-                )
-
-
-if __name__ == "__main__":
-    john = Passenger(start=(0,2), end=(8,1), speed=15) 
-    mary = Passenger(start=(0,0), end=(6,2), speed=12) 
-    route = Route("route.csv")
-    journey = Journey([mary, john], route)
-    print(journey.travel_time(mary.id))
+                raise IndexError("Please check passenger file follows correct format.")
