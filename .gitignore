@@ -28,7 +28,13 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-
+.vscode
 passengers.csv
 route.csv
 test.ipynb
+.coverage
+planneroop.py
+webservice_scraper.py
+route_special_case.csv
+load.png
+map.png
