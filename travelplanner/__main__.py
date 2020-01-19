@@ -1,9 +1,9 @@
-import planner as pl
+import travelplanner as pl
 import matplotlib.pyplot as plt
 from argparse import ArgumentParser as arg
 
 
-def parser():
+def main():
 
     parser = arg(description="travelplanner")
     parser.add_argument(
@@ -65,13 +65,15 @@ def parser():
 
     if args["saveplots"]:
         plt.figure()
-        fig_map, ax_map = journey.route.plot_map()
+        
+        journey.route.plot_map()
         plt.savefig("./map.png")
         plt.close()
-        fig_load, ax_load = journey.plot_bus_load()
-        fig_load.savefig("./load.png")
+        
+        journey.plot_bus_load()
+        plt.savefig("./load.png")
         plt.close()
 
 
 if __name__ == "__main__":
-    parser()
+    main()
