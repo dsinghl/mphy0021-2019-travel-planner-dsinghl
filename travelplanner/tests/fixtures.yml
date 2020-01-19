@@ -47,6 +47,7 @@ route_constructor_pass_tests:
             repr: route(start=(9, 6), end=(4, 6), speed=20) 
             str: Route from (9, 6) to (4, 6) with speed 20 minutes per step
 
+
 route_timetable_tests:
     - unspecified_speed:
           test_input:
@@ -57,6 +58,13 @@ route_timetable_tests:
             file_name: 'test_route.csv'
             speed: 20
           expected: {'A': 0, 'B': 140, 'C': 300, 'D': 380}
+
+
+route_generate_cc_tests:
+    - pass:
+          test_input:
+            file_name: 'test_route.csv'
+          expected: { 'start' : [9, 6] , 'cc' : '6664446664244222220'}
 
 
 passenger_constructor_tests:
@@ -76,8 +84,8 @@ read_passenger_fail_tests:
 
 journey_travel_time:
     - same_distance_from_two_stops:
-          test_input: 1 
+          test_input: 0 
           expected: {'walk': 80.0, 'bus': 100}
     - only_walk:
-          test_input: 2 
+          test_input: 1 
           expected: {'walk': 80.0, 'bus': 0}

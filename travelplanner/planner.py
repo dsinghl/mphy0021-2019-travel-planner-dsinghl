@@ -113,6 +113,11 @@ class Route:
 
 class Passenger:
 
+    r"""
+    >>> Passenger(start=(1,1),end=(5,1), speed=20)
+    passenger1((1, 1),(5, 1),20)
+    """
+
     __lastID = 1
 
     def __init__(self, *, start, end, speed):
@@ -304,20 +309,3 @@ def __check_passenger_csv_format(passenger_filename):
         for line in csv_file:
             if line.count(",") != commas_per_line:
                 raise IndexError("Please check passenger file follows correct format.")
-
-
-# if __name__ == "__main__":
-#     passengers = [ Passenger(start=start, end=end, speed=speed) for start, end, speed in read_passengers('passengers.csv') ]
-#     route = Route('route.csv')
-#     journey = Journey(passengers, route)
-#     test = passengers[0]
-#     print(test)
-#     (a,b),(c,d) = journey.passenger_trip(test)
-#     print(test.speed)
-#     print(test.start)
-#     print(test.end)
-#     fig, ax = journey.plot_bus_load()
-#     plt.show()
-
-# for passen in passengers:
-#     print(journey._passenger_trip_time(passen))

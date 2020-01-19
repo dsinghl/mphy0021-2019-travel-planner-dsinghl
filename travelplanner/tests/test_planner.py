@@ -71,6 +71,20 @@ def test_timetable(test_name):
 
 
 @pytest.mark.parametrize(
+    "test_name", fixtures.get("route_generate_cc_tests"), ids=["pass"]
+)
+def test_generate_cc(test_name):
+    properties = list(test_name.values())[0]
+    test_input = list(properties["test_input"].values())
+    filename = get_path(test_input[0])
+    route = pl.Route(filename)
+    expected_dict = properties["expected"]
+    expected = (tuple(expected_dict["start"]), expected_dict["cc"])
+    print(type(expected))
+    assert expected == route.generate_cc()
+
+
+@pytest.mark.parametrize(
     "test_name", fixtures.get("passenger_constructor_tests"), ids=["incorrect_args"]
 )
 def test__fail_passenger_constructor(test_name):
@@ -94,7 +108,13 @@ def test_read_passengers(test_name):
         pl.read_passengers(file)
 
 
-@pytest.fixture(scope="module")
+def test_walk_time():
+    passenger = pl.Passenger(start=(0, 0), end=(0, 5), speed=20)
+    expected = 5 * 20
+    assert passenger.walk_time() == expected
+
+
+@pytest.fixture(scope="session")
 def journey():
     pl.Journey.__lastID = 1
     passengers_file = get_path("test_passengers_special_cases.csv")
@@ -105,7 +125,6 @@ def journey():
     ]
     route = pl.Route(route_file)
     journey = pl.Journey(passengers, route)
-    type(journey).__lastID = 1
     return journey
 
 
@@ -117,8 +136,8 @@ def journey():
 def test_travel_time(test_name, journey):
     properties = list(test_name.values())[0]
     test_input = properties["test_input"]
+    test_input = journey.passengers[test_input].id
     expected = properties["expected"]
-    print(journey.passengers)
     assert journey.travel_time(test_input) == expected
 
 
