@@ -5,7 +5,6 @@ import csv
 
 
 class Route:
-
     def __init__(self, route_filename, speed=10):
         self.__check_valid_speed(speed)
         self.speed = speed
@@ -31,9 +30,7 @@ class Route:
         with open(route_filename) as csv_file:
             for line in csv_file:
                 if line.count(",") != commas_per_line:
-                    raise SyntaxError(
-                        "Please check route file follows correct format."
-                    )
+                    raise SyntaxError("Please check route file follows correct format.")
 
     def __check_valid_route(self):
         chain_code = self.generate_cc()[1]
@@ -43,22 +40,23 @@ class Route:
                     "Invalid route. Bus can only travel horizontally or vertically per step."
                 )
 
-
     def __check_valid_speed(self, speed):
         if speed <= 0:
-            raise ValueError('Bus cannot move at less than or equal to 0 minutes per step.')
+            raise ValueError(
+                "Bus cannot move at less than or equal to 0 minutes per step."
+            )
+
+    def __str__(self):
+        return f"Route from {self.route[0][:2]} to {self.route[-1][:2]} with speed {self.speed} minutes per step"
+
+    def __repr__(self):
+        return f"route(start={self.route[0][:2]}, end={self.route[-1][:2]}, speed={self.speed})"
 
     def _stop_locations(self):
         stop_list = [
             (np.asarray(location), stop) for *location, stop in self.route if stop
         ]
         return stop_list
-
-    def __str__(self):
-        return f"Route from {self.route[0][:2]} to {self.route[-1][:2]} with speed {self.speed} minutes per step"
-    
-    def __repr__(self):
-        return f"route(start={self.route[0][:2]}, end={self.route[-1][:2]}, speed={self.speed})"
 
     def timetable(self):
         """Generates a timetable for a route as minutes from its first stop. """
@@ -70,7 +68,7 @@ class Route:
             time += self.speed
         return stops
 
-    def plot_map(self):
+    def plot_map(self,):
         max_x = max([n[0] for n in self.route]) + 5  # adds padding
         max_y = max([n[1] for n in self.route]) + 5
         grid = np.zeros((max_y, max_x))
@@ -78,11 +76,11 @@ class Route:
             grid[y, x] = 1
             if stop:
                 grid[y, x] += 1
-        _, ax = plt.subplots(1, 1)
+        fig, ax = plt.subplots(1, 1)
         ax.pcolor(grid)
         ax.invert_yaxis()
         ax.set_aspect("equal", "datalim")
-        plt.show()
+        return fig, ax
 
     def generate_cc(self):
         r"""
@@ -131,7 +129,7 @@ class Passenger:
         validspeed = type(speed) == float or int
         valid_init = validstart and validend and validspeed
         if not valid_init:
-             raise TypeError(
+            raise TypeError(
                 "Please supply tuple of 2 values for start and end positions, and a float or integer for speed"
             )
 
@@ -141,10 +139,14 @@ class Passenger:
     def __repr__(self):
         return f"passenger{self.id}({self.start},{self.end},{self.speed})"
 
-    def walk_time(self):
+    def walk_distance(self):
         endpoint = np.asarray(self.end)
         startpoint = np.asarray(self.start)
         distance = np.linalg.norm(endpoint - startpoint)
+        return distance
+
+    def walk_time(self):
+        distance = self.walk_distance()
         time = distance * self.speed
         return time
 
@@ -261,23 +263,25 @@ class Journey:
         print(f"Average time on bus: {av_bus_time:.0f} min")
         print(f"Average walking time: {av_walk_time:.0f} min")
 
-    def plot_bus_load(self):
+    def plot_bus_load(self,):
         stops = {step[2]: 0 for step in self._route() if step[2]}
         print(stops)
         for passenger in self.passengers:
-            trip = self.passenger_trip(passenger)
-            stops[trip[0][1]] += 1
-            stops[trip[1][1]] -= 1
+            travel_time = self.travel_time(passenger.id)
+            if travel_time["bus"] != 0:
+                trip = self.passenger_trip(passenger)
+                stops[trip[0][1]] += 1
+                stops[trip[1][1]] -= 1
         for i, stop in enumerate(stops):
             if i > 0:
                 stops[stop] += stops[prev]
             prev = stop
         print(stops)
-        _, ax = plt.subplots()
+        fig, ax = plt.subplots()
         ax.step(range(len(stops)), list(stops.values()), where="post")
         ax.set_xticks(range(len(stops)))
         ax.set_xticklabels(list(stops.keys()))
-        plt.show()
+        return fig, ax
 
 
 def read_passengers(passenger_filename):
@@ -286,9 +290,9 @@ def read_passengers(passenger_filename):
     with open(passenger_filename) as csv_file:
         read_csv = csv.reader(csv_file, delimiter=",")
         for row in read_csv:
-            start = (int(row[0]), int(row[1]))
-            end = (int(row[2]), int(row[3]))
-            speed = int(row[4])
+            start = (float(row[0]), float(row[1]))
+            end = (float(row[2]), float(row[3]))
+            speed = float(row[4])
             passenger = (start, end, speed)
             passengers.append(passenger)
     return passengers
@@ -299,7 +303,21 @@ def __check_passenger_csv_format(passenger_filename):
     with open(passenger_filename) as csv_file:
         for line in csv_file:
             if line.count(",") != commas_per_line:
-                raise IndexError(
-                    "Please check passenger file follows correct format."
-                )
+                raise IndexError("Please check passenger file follows correct format.")
 
+
+# if __name__ == "__main__":
+#     passengers = [ Passenger(start=start, end=end, speed=speed) for start, end, speed in read_passengers('passengers.csv') ]
+#     route = Route('route.csv')
+#     journey = Journey(passengers, route)
+#     test = passengers[0]
+#     print(test)
+#     (a,b),(c,d) = journey.passenger_trip(test)
+#     print(test.speed)
+#     print(test.start)
+#     print(test.end)
+#     fig, ax = journey.plot_bus_load()
+#     plt.show()
+
+# for passen in passengers:
+#     print(journey._passenger_trip_time(passen))
