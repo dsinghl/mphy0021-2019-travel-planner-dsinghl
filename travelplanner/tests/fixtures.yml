@@ -44,8 +44,8 @@ route_constructor_pass_tests:
               - [3,6,'']
               - [4,6,D]
             speed: 20
-            repr: route(start=(9, 6), end=(4, 6), speed=20) 
-            str: Route from (9, 6) to (4, 6) with speed 20 minutes per step
+            repr: route((9, 6),(4, 6),20) 
+            str: route((9, 6),(4, 6),20)
 
 
 route_timetable_tests:
