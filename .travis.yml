@@ -6,4 +6,4 @@ install:
   - pip install pytest-cov
 
 script:
-  - pytest --cov --doctest-modules --basetemp=travelplanner/tests/tests_data/
+  - pytest --cov --doctest-modules
