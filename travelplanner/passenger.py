@@ -56,6 +56,8 @@ class Passenger:
             End position of passenger trip.
         speed: int or float
             walking speed of passenger in min/step.
+        id: int
+            Unique Id of passenger
 
     Raises:
         TypeError:
