@@ -149,7 +149,8 @@ class Journey:
         for passenger in self.passengers:
             if passenger_id == passenger.id:
                 trip_time = self._passenger_trip_time(passenger)
-                rounded_time = { key: round(val,2) for key, val in trip_time.items()}
+                rounded_time = {key: round(val, 2)
+                                for key, val in trip_time.items()}
                 return rounded_time
         return ValueError(
             f"A passenger with Id={passenger_id} does not exist.")
