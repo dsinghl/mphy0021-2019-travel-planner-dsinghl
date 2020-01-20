@@ -1,20 +1,46 @@
-import travelplanner as pl
+"""
+Travelplanner command line interface
+
+Mandatory:
+    route_file
+    passengers_file
+        These must be csv files
+
+Optional:
+    --speed int or float
+        Supply and value for minutes per step of bus
+    --saveplots
+        Flag, saves bus load and map plots to map.png and load.png
+
+"""
+from travelplanner.route import Route
+from travelplanner.passenger import Passenger, read_passengers
+from travelplanner.journey import Journey
 import matplotlib.pyplot as plt
 from argparse import ArgumentParser as arg
 
 
 def main():
 
-    parser = arg(description="travelplanner")
+    parser = arg(
+        description=(
+            "Travelplanner command line inferface. "
+            "Used to calculate journeys for passengers on a bus route."))
     parser.add_argument(
         "route_file",
         type=str,
-        help='Route csv file name, for example "route.csv". Use path if file not in current dirrectory.',
+        help=(
+            'Route csv file name, for example "route.csv".'
+            "Use path if file not in current dirrectory."
+        ),
     )
     parser.add_argument(
         "passenger_file",
         type=str,
-        help='Passengers csv file name, for example "passengers.csv". Use path if file not in current dirrectory.',
+        help=(
+            'Passengers csv file name, for example "passengers.csv". '
+            "Use path if file not in current dirrectory."
+        ),
     )
     parser.add_argument(
         "--speed",
@@ -25,17 +51,20 @@ def main():
     parser.add_argument(
         "--saveplots",
         action="store_true",
-        help="(OPTIONAL) Saves two plots of bus load and route in current directory.",
+        help=(
+            "(OPTIONAL) Saves two plots of bus "
+            "load and route in current directory."
+        ),
     )
 
     arguments = parser.parse_args()
     args = vars(arguments)
     passengers = [
-        pl.Passenger(start=start, end=end, speed=speed)
-        for start, end, speed in pl.read_passengers(args["passenger_file"])
+        Passenger(start=start, end=end, speed=speed)
+        for start, end, speed in read_passengers(args["passenger_file"])
     ]
-    route = pl.Route(args["route_file"], speed=args["speed"])
-    journey = pl.Journey(passengers, route)
+    route = Route(args["route_file"], speed=args["speed"])
+    journey = Journey(passengers, route)
 
     print(" Stops: minu tes from start\n", journey.route.timetable())
     for passenger in passengers:
@@ -65,11 +94,11 @@ def main():
 
     if args["saveplots"]:
         plt.figure()
-        
+
         journey.route.plot_map()
         plt.savefig("./map.png")
         plt.close()
-        
+
         journey.plot_bus_load()
         plt.savefig("./load.png")
         plt.close()
