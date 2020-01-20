@@ -13,7 +13,7 @@ route_constructor_fail_tests:
           test_input: 
             file_name: 'test_route_diagonal.csv'
             speed: 10
-          expected: Invalid route. Bus can only travel horizontally or vertically per step.
+          expected: Bus cannot travel diagonally.
 
 
 route_constructor_pass_tests: 
