@@ -66,7 +66,7 @@ def main():
     route = Route(args["route_file"], speed=args["speed"])
     journey = Journey(passengers, route)
 
-    print(" Stops: minu tes from start\n", journey.route.timetable())
+    print(" Stops: minutes from start\n", journey.route.timetable())
     for passenger in passengers:
         print(f"Trip for passenger: {passenger.id}")
         start, end = journey.passenger_trip(passenger)

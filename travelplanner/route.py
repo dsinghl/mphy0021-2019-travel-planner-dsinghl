@@ -64,8 +64,7 @@ class Route:
             invalid_cc = int(digit) % 2 != 0
             if invalid_cc:
                 raise ValueError(
-                    "Invalid route. Bus can only travel"
-                    " horizontally or vertically per step."
+                    "Bus cannot travel diagonally."
                 )
 
     def __check_valid_speed(self, speed):
