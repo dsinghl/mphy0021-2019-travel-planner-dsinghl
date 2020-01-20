@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.4" />
+<title>travelplanner.tests.test_planner API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>travelplanner.tests.test_planner</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import pytest
+import os
+from travelplanner.route import Route
+from travelplanner.passenger import Passenger, read_passengers
+from travelplanner.journey import Journey
+import yaml
+
+
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(THIS_DIR, &#34;tests_data&#34;)
+
+fixtures_file = os.path.join(THIS_DIR, &#34;fixtures.yml&#34;)
+with open(fixtures_file, &#34;r&#34;) as yamlfile:
+    fixtures = yaml.safe_load(yamlfile)
+
+
+def get_path(filename):
+    return os.path.join(DATA_DIR, filename)
+
+
+@pytest.mark.parametrize(
+    &#34;test_name&#34;,
+    fixtures.get(&#34;route_constructor_fail_tests&#34;),
+    ids=[&#34;csv_format_fail&#34;, &#34;bus_neg_speed_fail&#34;, &#34;diagonal_route_fail&#34;],
+)
+def test_fail_route_constructor(test_name):
+    properties = list(test_name.values())[0]
+    test_input = list(properties[&#34;test_input&#34;].values())
+    expected = properties[&#34;expected&#34;]
+    file = get_path(test_input[0])
+    speed = test_input[1]
+    with pytest.raises(Exception, match=expected):
+        Route(file, speed=speed)
+
+
+@pytest.mark.parametrize(
+    &#34;test_name&#34;,
+    fixtures.get(&#34;route_constructor_pass_tests&#34;),
+    ids=[&#34;csv_format_pass&#34;])
+def test_pass_route_constructor(test_name):
+    properties = list(test_name.values())[0]
+    test_input = list(properties[&#34;test_input&#34;].values())
+    expected = list(properties[&#34;expected&#34;].values())
+    expected_route = [tuple(i) for i in expected[0]]
+    expected_speed = expected[1]
+    expected_repr = expected[2]
+    expected_str = expected[3]
+    file = get_path(test_input[0])
+    speed = test_input[1]
+    route = Route(file, speed=speed)
+    assert route.route == expected_route
+    assert route.speed == expected_speed
+    assert repr(route) == expected_repr
+    assert str(route) == expected_str
+
+
+@pytest.mark.parametrize(
+    &#34;test_name&#34;,
+    fixtures.get(&#34;route_timetable_tests&#34;),
+    ids=[&#34;unspecified_speed&#34;, &#34;specified_speed&#34;],
+)
+def test_timetable(test_name):
+    properties = list(test_name.values())[0]
+    test_input = list(properties[&#34;test_input&#34;].values())
+    filename = get_path(test_input[0])
+    expected = properties[&#34;expected&#34;]
+    if len(test_input) &gt; 1:
+        speed = test_input[1]
+        route = Route(filename, speed=speed)
+    else:
+        route = Route(filename)
+    assert route.timetable() == expected
+
+
+@pytest.mark.parametrize(
+    &#34;test_name&#34;, fixtures.get(&#34;route_generate_cc_tests&#34;), ids=[&#34;pass&#34;]
+)
+def test_generate_cc(test_name):
+    properties = list(test_name.values())[0]
+    test_input = list(properties[&#34;test_input&#34;].values())
+    filename = get_path(test_input[0])
+    route = Route(filename,)
+    expected_dict = properties[&#34;expected&#34;]
+    expected = (tuple(expected_dict[&#39;start&#39;]), expected_dict[&#39;cc&#39;])
+    print(type(expected))
+    assert expected == route.generate_cc()
+
+
+@pytest.mark.parametrize(
+    &#34;test_name&#34;,
+    fixtures.get(&#34;passenger_constructor_tests&#34;),
+    ids=[&#34;incorrect_args&#34;])
+def test__fail_passenger_constructor(test_name):
+    properties = list(test_name.values())[0]
+    test_input = list(properties[&#34;test_input&#34;].values())
+    expected = properties[&#34;expected&#34;]
+    start, end, speed = test_input[0], test_input[1], test_input[2]
+    with pytest.raises(Exception, match=expected):
+        Passenger(start=start, end=end, speed=speed)
+
+
+@pytest.mark.parametrize(
+    &#34;test_name&#34;,
+    fixtures.get(&#34;read_passenger_fail_tests&#34;),
+    ids=[&#34;csv_format_fail&#34;])
+def test_read_passengers(test_name):
+    properties = list(test_name.values())[0]
+    test_input = properties[&#34;test_input&#34;]
+    expected = properties[&#34;expected&#34;]
+    file = get_path(test_input)
+    with pytest.raises(Exception, match=expected):
+        read_passengers(file)
+
+
+def test_walk_time():
+    passenger = Passenger(start=(0, 0), end=(0, 5), speed=20)
+    expected = 5 * 20
+    assert passenger.walk_time() == expected
+
+
+@pytest.fixture(scope=&#34;session&#34;)
+def route():
+    route_file = get_path(&#34;test_route_special_cases.csv&#34;)
+    route = Route(route_file)
+    return route
+
+
+@pytest.fixture(scope=&#34;session&#34;)
+def passengers():
+    passengers_file = get_path(&#34;test_passengers_special_cases.csv&#34;)
+    passengers = [
+        Passenger(start=start, end=end, speed=speed)
+        for start, end, speed in read_passengers(passengers_file)
+    ]
+    return passengers
+
+
+@pytest.fixture(scope=&#34;session&#34;)
+def journey(passengers, route):
+    journey = Journey(passengers, route)
+    return journey
+
+
+@pytest.mark.parametrize(
+    &#34;test_name&#34;,
+    fixtures.get(&#34;journey_travel_time&#34;),
+    ids=[&#34;same_distance_from_two_stops&#34;, &#34;only_walk&#34;],
+)
+def test_travel_time(test_name, journey):
+    properties = list(test_name.values())[0]
+    test_input = properties[&#34;test_input&#34;]
+    test_input = journey.passengers[test_input].id
+    expected = properties[&#34;expected&#34;]
+    assert journey.travel_time(test_input) == expected
+
+
+def test_journey_constructor_fail(route, passengers):
+    route_bad = [1, 2, &#34;A&#34;, 3, 4, &#34;&#34;, 5, 6, &#34;C&#34;]
+    passenger_bad = [(1, 1), (5, 1), 20]
+    message = &#34;Only route and passenger objects allowed.&#34;
+    with pytest.raises(TypeError, match=message):
+        Journey(passenger_bad, route)
+    with pytest.raises(TypeError, match=message):
+        Journey(passengers, route_bad)
+
+
+def test_print_time_stats(capsys, journey):
+    print(&#34;Average time on bus: 17 min&#34;)
+    print(&#34;Average walking time: 198 min&#34;)
+    out_exp, _ = capsys.readouterr()
+    journey.print_time_stats()
+    out_test, _ = capsys.readouterr()
+    assert out_test == out_exp
+
+
+def test_journey_constructor_pass(journey, route, passengers):
+    expected = (f&#34;journey({repr(route)},&#34; +
+                f&#34; num_passengers:{journey.total_passengers})&#34;)
+    assert repr(journey) == expected
+    assert str(journey) == expected</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="travelplanner.tests.test_planner.get_path"><code class="name flex">
+<span>def <span class="ident">get_path</span></span>(<span>filename)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_path(filename):
+    return os.path.join(DATA_DIR, filename)</code></pre>
+</details>
+</dd>
+<dt id="travelplanner.tests.test_planner.journey"><code class="name flex">
+<span>def <span class="ident">journey</span></span>(<span>passengers, route)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@pytest.fixture(scope=&#34;session&#34;)
+def journey(passengers, route):
+    journey = Journey(passengers, route)
+    return journey</code></pre>
+</details>
+</dd>
+<dt id="travelplanner.tests.test_planner.passengers"><code class="name flex">
+<span>def <span class="ident">passengers</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@pytest.fixture(scope=&#34;session&#34;)
+def passengers():
+    passengers_file = get_path(&#34;test_passengers_special_cases.csv&#34;)
+    passengers = [
+        Passenger(start=start, end=end, speed=speed)
+        for start, end, speed in read_passengers(passengers_file)
+    ]
+    return passengers</code></pre>
+</details>
+</dd>
+<dt id="travelplanner.tests.test_planner.route"><code class="name flex">
+<span>def <span class="ident">route</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@pytest.fixture(scope=&#34;session&#34;)
+def route():
+    route_file = get_path(&#34;test_route_special_cases.csv&#34;)
+    route = Route(route_file)
+    return route</code></pre>
+</details>
+</dd>
+<dt id="travelplanner.tests.test_planner.test__fail_passenger_constructor"><code class="name flex">
+<span>def <span class="ident">test__fail_passenger_constructor</span></span>(<span>test_name)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@pytest.mark.parametrize(
+    &#34;test_name&#34;,
+    fixtures.get(&#34;passenger_constructor_tests&#34;),
+    ids=[&#34;incorrect_args&#34;])
+def test__fail_passenger_constructor(test_name):
+    properties = list(test_name.values())[0]
+    test_input = list(properties[&#34;test_input&#34;].values())
+    expected = properties[&#34;expected&#34;]
+    start, end, speed = test_input[0], test_input[1], test_input[2]
+    with pytest.raises(Exception, match=expected):
+        Passenger(start=start, end=end, speed=speed)</code></pre>
+</details>
+</dd>
+<dt id="travelplanner.tests.test_planner.test_fail_route_constructor"><code class="name flex">
+<span>def <span class="ident">test_fail_route_constructor</span></span>(<span>test_name)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@pytest.mark.parametrize(
+    &#34;test_name&#34;,
+    fixtures.get(&#34;route_constructor_fail_tests&#34;),
+    ids=[&#34;csv_format_fail&#34;, &#34;bus_neg_speed_fail&#34;, &#34;diagonal_route_fail&#34;],
+)
+def test_fail_route_constructor(test_name):
+    properties = list(test_name.values())[0]
+    test_input = list(properties[&#34;test_input&#34;].values())
+    expected = properties[&#34;expected&#34;]
+    file = get_path(test_input[0])
+    speed = test_input[1]
+    with pytest.raises(Exception, match=expected):
+        Route(file, speed=speed)</code></pre>
+</details>
+</dd>
+<dt id="travelplanner.tests.test_planner.test_generate_cc"><code class="name flex">
+<span>def <span class="ident">test_generate_cc</span></span>(<span>test_name)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@pytest.mark.parametrize(
+    &#34;test_name&#34;, fixtures.get(&#34;route_generate_cc_tests&#34;), ids=[&#34;pass&#34;]
+)
+def test_generate_cc(test_name):
+    properties = list(test_name.values())[0]
+    test_input = list(properties[&#34;test_input&#34;].values())
+    filename = get_path(test_input[0])
+    route = Route(filename,)
+    expected_dict = properties[&#34;expected&#34;]
+    expected = (tuple(expected_dict[&#39;start&#39;]), expected_dict[&#39;cc&#39;])
+    print(type(expected))
+    assert expected == route.generate_cc()</code></pre>
+</details>
+</dd>
+<dt id="travelplanner.tests.test_planner.test_journey_constructor_fail"><code class="name flex">
+<span>def <span class="ident">test_journey_constructor_fail</span></span>(<span>route, passengers)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_journey_constructor_fail(route, passengers):
+    route_bad = [1, 2, &#34;A&#34;, 3, 4, &#34;&#34;, 5, 6, &#34;C&#34;]
+    passenger_bad = [(1, 1), (5, 1), 20]
+    message = &#34;Only route and passenger objects allowed.&#34;
+    with pytest.raises(TypeError, match=message):
+        Journey(passenger_bad, route)
+    with pytest.raises(TypeError, match=message):
+        Journey(passengers, route_bad)</code></pre>
+</details>
+</dd>
+<dt id="travelplanner.tests.test_planner.test_journey_constructor_pass"><code class="name flex">
+<span>def <span class="ident">test_journey_constructor_pass</span></span>(<span>journey, route, passengers)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_journey_constructor_pass(journey, route, passengers):
+    expected = (f&#34;journey({repr(route)},&#34; +
+                f&#34; num_passengers:{journey.total_passengers})&#34;)
+    assert repr(journey) == expected
+    assert str(journey) == expected</code></pre>
+</details>
+</dd>
+<dt id="travelplanner.tests.test_planner.test_pass_route_constructor"><code class="name flex">
+<span>def <span class="ident">test_pass_route_constructor</span></span>(<span>test_name)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@pytest.mark.parametrize(
+    &#34;test_name&#34;,
+    fixtures.get(&#34;route_constructor_pass_tests&#34;),
+    ids=[&#34;csv_format_pass&#34;])
+def test_pass_route_constructor(test_name):
+    properties = list(test_name.values())[0]
+    test_input = list(properties[&#34;test_input&#34;].values())
+    expected = list(properties[&#34;expected&#34;].values())
+    expected_route = [tuple(i) for i in expected[0]]
+    expected_speed = expected[1]
+    expected_repr = expected[2]
+    expected_str = expected[3]
+    file = get_path(test_input[0])
+    speed = test_input[1]
+    route = Route(file, speed=speed)
+    assert route.route == expected_route
+    assert route.speed == expected_speed
+    assert repr(route) == expected_repr
+    assert str(route) == expected_str</code></pre>
+</details>
+</dd>
+<dt id="travelplanner.tests.test_planner.test_print_time_stats"><code class="name flex">
+<span>def <span class="ident">test_print_time_stats</span></span>(<span>capsys, journey)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_print_time_stats(capsys, journey):
+    print(&#34;Average time on bus: 17 min&#34;)
+    print(&#34;Average walking time: 198 min&#34;)
+    out_exp, _ = capsys.readouterr()
+    journey.print_time_stats()
+    out_test, _ = capsys.readouterr()
+    assert out_test == out_exp</code></pre>
+</details>
+</dd>
+<dt id="travelplanner.tests.test_planner.test_read_passengers"><code class="name flex">
+<span>def <span class="ident">test_read_passengers</span></span>(<span>test_name)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@pytest.mark.parametrize(
+    &#34;test_name&#34;,
+    fixtures.get(&#34;read_passenger_fail_tests&#34;),
+    ids=[&#34;csv_format_fail&#34;])
+def test_read_passengers(test_name):
+    properties = list(test_name.values())[0]
+    test_input = properties[&#34;test_input&#34;]
+    expected = properties[&#34;expected&#34;]
+    file = get_path(test_input)
+    with pytest.raises(Exception, match=expected):
+        read_passengers(file)</code></pre>
+</details>
+</dd>
+<dt id="travelplanner.tests.test_planner.test_timetable"><code class="name flex">
+<span>def <span class="ident">test_timetable</span></span>(<span>test_name)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@pytest.mark.parametrize(
+    &#34;test_name&#34;,
+    fixtures.get(&#34;route_timetable_tests&#34;),
+    ids=[&#34;unspecified_speed&#34;, &#34;specified_speed&#34;],
+)
+def test_timetable(test_name):
+    properties = list(test_name.values())[0]
+    test_input = list(properties[&#34;test_input&#34;].values())
+    filename = get_path(test_input[0])
+    expected = properties[&#34;expected&#34;]
+    if len(test_input) &gt; 1:
+        speed = test_input[1]
+        route = Route(filename, speed=speed)
+    else:
+        route = Route(filename)
+    assert route.timetable() == expected</code></pre>
+</details>
+</dd>
+<dt id="travelplanner.tests.test_planner.test_travel_time"><code class="name flex">
+<span>def <span class="ident">test_travel_time</span></span>(<span>test_name, journey)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@pytest.mark.parametrize(
+    &#34;test_name&#34;,
+    fixtures.get(&#34;journey_travel_time&#34;),
+    ids=[&#34;same_distance_from_two_stops&#34;, &#34;only_walk&#34;],
+)
+def test_travel_time(test_name, journey):
+    properties = list(test_name.values())[0]
+    test_input = properties[&#34;test_input&#34;]
+    test_input = journey.passengers[test_input].id
+    expected = properties[&#34;expected&#34;]
+    assert journey.travel_time(test_input) == expected</code></pre>
+</details>
+</dd>
+<dt id="travelplanner.tests.test_planner.test_walk_time"><code class="name flex">
+<span>def <span class="ident">test_walk_time</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_walk_time():
+    passenger = Passenger(start=(0, 0), end=(0, 5), speed=20)
+    expected = 5 * 20
+    assert passenger.walk_time() == expected</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="travelplanner.tests" href="index.html">travelplanner.tests</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="travelplanner.tests.test_planner.get_path" href="#travelplanner.tests.test_planner.get_path">get_path</a></code></li>
+<li><code><a title="travelplanner.tests.test_planner.journey" href="#travelplanner.tests.test_planner.journey">journey</a></code></li>
+<li><code><a title="travelplanner.tests.test_planner.passengers" href="#travelplanner.tests.test_planner.passengers">passengers</a></code></li>
+<li><code><a title="travelplanner.tests.test_planner.route" href="#travelplanner.tests.test_planner.route">route</a></code></li>
+<li><code><a title="travelplanner.tests.test_planner.test__fail_passenger_constructor" href="#travelplanner.tests.test_planner.test__fail_passenger_constructor">test__fail_passenger_constructor</a></code></li>
+<li><code><a title="travelplanner.tests.test_planner.test_fail_route_constructor" href="#travelplanner.tests.test_planner.test_fail_route_constructor">test_fail_route_constructor</a></code></li>
+<li><code><a title="travelplanner.tests.test_planner.test_generate_cc" href="#travelplanner.tests.test_planner.test_generate_cc">test_generate_cc</a></code></li>
+<li><code><a title="travelplanner.tests.test_planner.test_journey_constructor_fail" href="#travelplanner.tests.test_planner.test_journey_constructor_fail">test_journey_constructor_fail</a></code></li>
+<li><code><a title="travelplanner.tests.test_planner.test_journey_constructor_pass" href="#travelplanner.tests.test_planner.test_journey_constructor_pass">test_journey_constructor_pass</a></code></li>
+<li><code><a title="travelplanner.tests.test_planner.test_pass_route_constructor" href="#travelplanner.tests.test_planner.test_pass_route_constructor">test_pass_route_constructor</a></code></li>
+<li><code><a title="travelplanner.tests.test_planner.test_print_time_stats" href="#travelplanner.tests.test_planner.test_print_time_stats">test_print_time_stats</a></code></li>
+<li><code><a title="travelplanner.tests.test_planner.test_read_passengers" href="#travelplanner.tests.test_planner.test_read_passengers">test_read_passengers</a></code></li>
+<li><code><a title="travelplanner.tests.test_planner.test_timetable" href="#travelplanner.tests.test_planner.test_timetable">test_timetable</a></code></li>
+<li><code><a title="travelplanner.tests.test_planner.test_travel_time" href="#travelplanner.tests.test_planner.test_travel_time">test_travel_time</a></code></li>
+<li><code><a title="travelplanner.tests.test_planner.test_walk_time" href="#travelplanner.tests.test_planner.test_walk_time">test_walk_time</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

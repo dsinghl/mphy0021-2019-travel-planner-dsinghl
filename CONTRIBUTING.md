@@ -1,9 +1,8 @@
 # Contributing
 
-When contributing to this repository, please first discuss the change you wish to make via issue,
-email, or any other method with the owners of this repository before making a change.
+We welcome contributions to this repository. Before following the below process, please first discuss your proposed via issue or email before making a change.
 
-Please note we have a code of conduct, please follow it in all your interactions with the project.
+Please note we have a [code of conduct](CODE_OF_CONDUCT.md) following the contributor covenant. Please follow it with all interactions to do with the project.
 
 ## Process
 

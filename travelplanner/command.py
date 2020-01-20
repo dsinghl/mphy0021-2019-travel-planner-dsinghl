@@ -1,16 +1,22 @@
 """
-Travelplanner command line interface
+Travelplanner command line interface.
+With travelplanner package installed,
+run using command:
 
-Mandatory:
+    bussimula {route_file} {passengers_file} [--speed SPEED] [--saveplots]
+
+Options:
+
     route_file
+        csv file or path if not in CWD
     passengers_file
-        These must be csv files
+        csv file or path if not in CWD
 
-Optional:
-    --speed int or float
-        Supply and value for minutes per step of bus
-    --saveplots
-        Flag, saves bus load and map plots to map.png and load.png
+    speed: OPTIONAL, int or float
+        Supply and value for minutes per step of bus.
+        Default: speed=10
+    saveplots: OPTIONAL
+        Flag. Saves bus load and map plots to map.png and load.png
 
 """
 from travelplanner.route import Route
@@ -21,11 +27,16 @@ from argparse import ArgumentParser as arg
 
 
 def main():
-
+    """
+    Command line interace.
+    With travelplanner installed, use command `bussimula`.
+    """
     parser = arg(
         description=(
             "Travelplanner command line inferface. "
-            "Used to calculate journeys for passengers on a bus route."))
+            "Used to calculate journeys for passengers on a bus route."
+        )
+    )
     parser.add_argument(
         "route_file",
         type=str,
@@ -53,8 +64,7 @@ def main():
         action="store_true",
         help=(
             "(OPTIONAL) Saves two plots of bus "
-            "load and route in current directory."
-        ),
+            "load and route in current directory."),
     )
 
     arguments = parser.parse_args()
